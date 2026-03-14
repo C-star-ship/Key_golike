@@ -1,61 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Free Key System</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 
 body{
-margin:0;
 background:black;
 color:#00ff9f;
 font-family:monospace;
 text-align:center;
-overflow:hidden;
-}
-
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
-}
-
-.container{
 margin-top:120px;
 }
 
 .keybox{
-background:#111;
 border:2px solid #00ff9f;
 padding:20px;
-border-radius:15px;
-font-size:22px;
-width:90%;
-max-width:400px;
+border-radius:10px;
+width:80%;
 margin:auto;
-word-break:break-all;
+font-size:20px;
 }
 
 button{
 margin-top:20px;
 padding:15px 35px;
-font-size:20px;
+font-size:18px;
 background:#00ff9f;
 border:none;
 border-radius:10px;
-cursor:pointer;
-}
-
-button:hover{
-background:#00cc7a;
-}
-
-.timer{
-margin-top:15px;
-font-size:18px;
 }
 
 </style>
@@ -63,133 +35,35 @@ font-size:18px;
 
 <body>
 
-<canvas id="matrix"></canvas>
+<h2>FREE KEY</h2>
 
-<div class="container">
-
-<h1>FREE KEY</h1>
-
-<div class="keybox" id="keyBox">
-CLICK GET KEY
-</div>
+<div class="keybox" id="key">Click Get Key</div>
 
 <button onclick="getKey()">GET KEY</button>
 
-<div class="timer" id="timer"></div>
-
-</div>
-
 <script>
 
-const link4m="https://link4m.net/N4WJcnr"
-
-function randomKey(){
-return "FREE-"+Math.random().toString(36).substring(2,10).toUpperCase()
-}
+const link="https://link4m.net/N4WJcnr"
 
 function getKey(){
 
-window.open(link4m,"_blank")
+window.open(link,"_blank")
 
 setTimeout(()=>{
 
-let key=randomKey()
+fetch("https://YOUR-WORKER.workers.dev/key")
+.then(r=>r.text())
+.then(k=>{
 
-localStorage.setItem("user_key",key)
-localStorage.setItem("key_time",Date.now())
+localStorage.setItem("user_key",k)
 
-document.getElementById("keyBox").innerText=key
+document.getElementById("key").innerText=k
 
-startTimer()
+})
 
-},5000)
-
-}
-
-function startTimer(){
-
-let saved=localStorage.getItem("key_time")
-
-let reset=86400000
-
-setInterval(()=>{
-
-let now=Date.now()
-
-let remain=reset-(now-saved)
-
-if(remain<=0){
-
-localStorage.removeItem("user_key")
-localStorage.removeItem("key_time")
-
-location.reload()
+},8000)
 
 }
-
-let h=Math.floor(remain/3600000)
-let m=Math.floor((remain%3600000)/60000)
-let s=Math.floor((remain%60000)/1000)
-
-document.getElementById("timer").innerText=
-"RESET IN "+h+"h "+m+"m "+s+"s"
-
-},1000)
-
-}
-
-if(localStorage.getItem("user_key")){
-
-document.getElementById("keyBox").innerText=
-localStorage.getItem("user_key")
-
-startTimer()
-
-}
-
-</script>
-
-<script>
-
-const canvas=document.getElementById("matrix")
-const ctx=canvas.getContext("2d")
-
-canvas.height=window.innerHeight
-canvas.width=window.innerWidth
-
-const letters="01"
-const fontSize=14
-const columns=canvas.width/fontSize
-
-const drops=[]
-
-for(let x=0;x<columns;x++)
-drops[x]=1
-
-function draw(){
-
-ctx.fillStyle="rgba(0,0,0,0.05)"
-ctx.fillRect(0,0,canvas.width,canvas.height)
-
-ctx.fillStyle="#0f0"
-ctx.font=fontSize+"px monospace"
-
-for(let i=0;i<drops.length;i++){
-
-let text=letters.charAt(Math.floor(Math.random()*letters.length))
-
-ctx.fillText(text,i*fontSize,drops[i]*fontSize)
-
-if(drops[i]*fontSize>canvas.height && Math.random()>0.975)
-drops[i]=0
-
-drops[i]++
-
-}
-
-}
-
-setInterval(draw,35)
 
 </script>
 
