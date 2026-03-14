@@ -1,48 +1,163 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
-<title>VIP KEY</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>VIP KEY GENERATOR</title>
 
 <style>
 
 body{
-background:black;
-color:#0f0;
-font-family:monospace;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
 margin:0;
+background:black;
+color:#00ff00;
+font-family:monospace;
+overflow:hidden;
 }
+
+/* MATRIX CANVAS */
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
+
+/* CENTER BOX */
 
 .box{
 
-background:#000;
-padding:40px;
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
 
-border:2px solid #0f0;
-border-radius:15px;
+width:92%;
+max-width:420px;
+
+background:#000;
+padding:35px;
+
+border-radius:18px;
+
+border:2px solid #00ff00;
 
 box-shadow:
-0 0 25px #0f0,
-0 0 80px #0f0;
+0 0 20px #00ff00,
+0 0 60px #00ff00;
 
 text-align:center;
 
-width:90%;
-max-width:420px;
+}
+
+/* TITLE */
+
+.title{
+
+font-size:26px;
+margin-bottom:25px;
 
 }
 
+/* INPUT */
+
+input{
+
+width:90%;
+padding:12px;
+
+font-size:18px;
+
+background:black;
+color:#00ff00;
+
+border:2px solid #00ff00;
+
+border-radius:10px;
+
+outline:none;
+
+text-align:center;
+
+margin-bottom:20px;
+
+}
+
+/* BUTTON */
+
+button{
+
+width:90%;
+padding:14px;
+
+font-size:18px;
+
+background:black;
+color:#00ff00;
+
+border:2px solid #00ff00;
+
+border-radius:12px;
+
+cursor:pointer;
+
+transition:0.2s;
+
+}
+
+button:hover{
+
+background:#00ff00;
+color:black;
+
+}
+
+/* RESULT */
+
 .result{
 
-margin-top:20px;
-color:#0ff;
+margin-top:25px;
+
 font-size:18px;
 
 word-break:break-all;
+
+}
+
+/* KEY BOX */
+
+.keybox{
+
+margin-top:15px;
+
+padding:15px;
+
+border:2px dashed #00ff00;
+
+border-radius:10px;
+
+font-size:18px;
+
+}
+
+/* COPY */
+
+.copy{
+
+margin-top:10px;
+
+cursor:pointer;
+
+color:#00ffff;
+
+}
+
+.copy:hover{
+
+text-decoration:underline;
 
 }
 
@@ -52,9 +167,17 @@ word-break:break-all;
 
 <body>
 
+<canvas id="matrix"></canvas>
+
 <div class="box">
 
-<h2>VIP KEY</h2>
+<div class="title">VIP KEY GENERATOR</div>
+
+<input id="days" type="number" placeholder="Nhập số ngày (ví dụ 30)">
+
+<br>
+
+<button onclick="createKey()">CREATE KEY</button>
 
 <div class="result" id="result"></div>
 
@@ -62,43 +185,91 @@ word-break:break-all;
 
 <script>
 
-/* random string */
+/* MATRIX EFFECT */
 
-function random(len){
+const canvas=document.getElementById("matrix")
 
-const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+const ctx=canvas.getContext("2d")
 
-let s=""
+canvas.height=window.innerHeight
+canvas.width=window.innerWidth
 
-for(let i=0;i<len;i++){
+const letters="01ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-s+=chars[Math.floor(Math.random()*chars.length)]
+const fontSize=14
+
+const columns=canvas.width/fontSize
+
+const drops=[]
+
+for(let i=0;i<columns;i++) drops[i]=1
+
+function draw(){
+
+ctx.fillStyle="rgba(0,0,0,0.05)"
+ctx.fillRect(0,0,canvas.width,canvas.height)
+
+ctx.fillStyle="#0F0"
+ctx.font=fontSize+"px monospace"
+
+for(let i=0;i<drops.length;i++){
+
+const text=letters[Math.floor(Math.random()*letters.length)]
+
+ctx.fillText(text,i*fontSize,drops[i]*fontSize)
+
+if(drops[i]*fontSize>canvas.height && Math.random()>0.975)
+drops[i]=0
+
+drops[i]++
 
 }
 
-return s
+}
+
+setInterval(draw,33)
+
+/* KEY GENERATOR */
+
+function createKey(){
+
+let days=document.getElementById("days").value
+
+if(!days || days<=0){
+
+alert("Nhập số ngày hợp lệ")
+
+return
 
 }
 
-/* đọc day */
+let rand=Math.random().toString(36).substring(2,10).toUpperCase()
 
-const params=new URLSearchParams(window.location.search)
+let expire=Date.now()+days*86400000
 
-let day=parseInt(params.get("day"))
+let key="VIP-"+rand+"-"+expire
 
-if(!day){
+document.getElementById("result").innerHTML=
 
-document.getElementById("result").innerText="Thiếu day"
+`
+day=${days}
 
-}else{
+<div class="keybox">${key}</div>
 
-let expire=Date.now()+day*86400000
+<div class="copy" onclick="copyKey('${key}')">
+CLICK TO COPY
+</div>
+`
 
-let key="VIP-"+random(8)+"-"+expire
+}
 
-document.getElementById("result").innerText=
+/* COPY */
 
-"day = "+day+"\n\nkey = "+key
+function copyKey(k){
+
+navigator.clipboard.writeText(k)
+
+alert("Đã copy key!")
 
 }
 
