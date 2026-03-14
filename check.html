@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>CHECK KEY</title>
@@ -10,31 +10,38 @@ body{
 background:black;
 color:#0f0;
 font-family:monospace;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.box{
+
+background:#000;
+padding:40px;
+
+border:2px solid #0f0;
+border-radius:15px;
+
+box-shadow:0 0 30px #0f0;
+
 text-align:center;
-padding-top:100px;
-}
 
-input{
-width:300px;
-padding:12px;
-background:#111;
-border:1px solid #0f0;
-color:#0f0;
-}
+width:90%;
+max-width:420px;
 
-button{
-padding:12px 20px;
-margin-top:10px;
-background:#0f0;
-border:none;
-font-weight:bold;
-cursor:pointer;
 }
 
 .result{
+
 margin-top:20px;
-font-size:18px;
 color:#0ff;
+font-size:18px;
+
+word-break:break-all;
+
 }
 
 </style>
@@ -43,50 +50,50 @@ color:#0ff;
 
 <body>
 
+<div class="box">
+
 <h2>CHECK KEY</h2>
-
-<p>key =</p>
-
-<input id="key" placeholder="Nhập key">
-
-<br>
-
-<button onclick="check()">CHECK</button>
 
 <div class="result" id="result"></div>
 
+</div>
+
 <script>
 
-function check(){
+let path = window.location.pathname
 
-let key=document.getElementById("key").value
+let parts = path.split("/")
+
+let keyPart = parts.find(p=>p.startsWith("key="))
+
+let key = keyPart ? keyPart.split("=")[1] : null
 
 if(!key){
-document.getElementById("result").innerText="❌ Chưa nhập key"
-return
+
+document.getElementById("result").innerText="Không có key"
+
+}else{
+
+let arr = key.split("-")
+
+let expire = parseInt(arr[arr.length-1])
+
+let now = Date.now()
+
+if(now > expire){
+
+document.getElementById("result").innerText="❌ KEY EXPIRED"
+
+}else{
+
+let hours = Math.floor((expire-now)/3600000)
+
+document.getElementById("result").innerText =
+"✅ VALID\n\n"+
+"key = "+key+"\n"+
+"còn = "+hours+" giờ"
+
 }
-
-let parts=key.split("-")
-
-if(parts.length<3){
-document.getElementById("result").innerText="❌ Key không hợp lệ"
-return
-}
-
-let type=parts[0]
-let expire=parseInt(parts[parts.length-1])
-
-let now=Date.now()
-
-if(now>expire){
-document.getElementById("result").innerText="⛔ Key đã hết hạn"
-return
-}
-
-let remain=Math.floor((expire-now)/3600000)
-
-document.getElementById("result").innerText=
-"✅ VALID | type = "+type+" | còn "+remain+" giờ"
 
 }
 
