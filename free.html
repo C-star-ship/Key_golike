@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GET FREE KEY</title>
+<title>Free Key System</title>
 
 <style>
 
@@ -25,7 +25,6 @@ z-index:-1;
 
 .container{
 margin-top:120px;
-padding:20px;
 }
 
 .keybox{
@@ -42,7 +41,7 @@ word-break:break-all;
 
 button{
 margin-top:20px;
-padding:15px 30px;
+padding:15px 35px;
 font-size:20px;
 background:#00ff9f;
 border:none;
@@ -52,11 +51,6 @@ cursor:pointer;
 
 button:hover{
 background:#00cc7a;
-}
-
-.copy{
-margin-top:10px;
-font-size:16px;
 }
 
 .timer{
@@ -73,15 +67,13 @@ font-size:18px;
 
 <div class="container">
 
-<h1>FREE KEY SYSTEM</h1>
+<h1>FREE KEY</h1>
 
 <div class="keybox" id="keyBox">
 CLICK GET KEY
 </div>
 
 <button onclick="getKey()">GET KEY</button>
-
-<div class="copy" id="copyText"></div>
 
 <div class="timer" id="timer"></div>
 
@@ -91,64 +83,32 @@ CLICK GET KEY
 
 const link4m="https://link4m.net/N4WJcnr"
 
-const keyStorage="user_key"
-const timeStorage="key_time"
-
 function randomKey(){
-return "KEY-"+Math.random().toString(36).substring(2,12).toUpperCase()
+return "FREE-"+Math.random().toString(36).substring(2,10).toUpperCase()
 }
 
 function getKey(){
 
-let time=localStorage.getItem(timeStorage)
-
-if(!time){
-
 window.open(link4m,"_blank")
+
+setTimeout(()=>{
 
 let key=randomKey()
 
-localStorage.setItem(keyStorage,key)
-localStorage.setItem(timeStorage,Date.now())
-
-showKey()
-
-}
-
-else{
-
-showKey()
-
-}
-
-}
-
-function showKey(){
-
-let key=localStorage.getItem(keyStorage)
+localStorage.setItem("user_key",key)
+localStorage.setItem("key_time",Date.now())
 
 document.getElementById("keyBox").innerText=key
 
-document.getElementById("copyText").innerHTML=
-'<button onclick="copyKey()">COPY KEY</button>'
-
 startTimer()
 
-}
-
-function copyKey(){
-
-let key=document.getElementById("keyBox").innerText
-
-navigator.clipboard.writeText(key)
-
-document.getElementById("copyText").innerHTML="COPIED ✔"
+},5000)
 
 }
 
 function startTimer(){
 
-let saved=localStorage.getItem(timeStorage)
+let saved=localStorage.getItem("key_time")
 
 let reset=86400000
 
@@ -160,7 +120,9 @@ let remain=reset-(now-saved)
 
 if(remain<=0){
 
-localStorage.clear()
+localStorage.removeItem("user_key")
+localStorage.removeItem("key_time")
+
 location.reload()
 
 }
@@ -176,8 +138,13 @@ document.getElementById("timer").innerText=
 
 }
 
-if(localStorage.getItem(keyStorage)){
-showKey()
+if(localStorage.getItem("user_key")){
+
+document.getElementById("keyBox").innerText=
+localStorage.getItem("user_key")
+
+startTimer()
+
 }
 
 </script>
