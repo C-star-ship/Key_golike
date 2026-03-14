@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>FREE KEY</title>
+
+<style>
+
+body{
+margin:0;
+background:black;
+color:#0f0;
+font-family:monospace;
+overflow:hidden;
+}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+}
+
+.card{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:rgba(0,0,0,0.85);
+padding:40px;
+width:360px;
+text-align:center;
+border-radius:15px;
+border:1px solid #0f0;
+box-shadow:0 0 20px #0f0;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+background:#0f0;
+border:none;
+font-weight:bold;
+cursor:pointer;
+}
+
+.key{
+margin-top:20px;
+font-size:18px;
+color:#0ff;
+word-break:break-all;
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="card">
+
+<h2>FREE KEY</h2>
+
+<button onclick="getKey()">GET KEY</button>
+
+<div class="key" id="key">
+key = -
+</div>
+
+<div id="expire"></div>
+
+</div>
+
+<script>
+
+/* MATRIX */
+
+const canvas=document.getElementById("matrix")
+const ctx=canvas.getContext("2d")
+
+canvas.height=window.innerHeight
+canvas.width=window.innerWidth
+
+const letters="01"
+const fontSize=14
+const columns=canvas.width/fontSize
+const drops=[]
+
+for(let i=0;i<columns;i++) drops[i]=1
+
+function draw(){
+
+ctx.fillStyle="rgba(0,0,0,0.05)"
+ctx.fillRect(0,0,canvas.width,canvas.height)
+
+ctx.fillStyle="#0f0"
+ctx.font=fontSize+"px monospace"
+
+for(let i=0;i<drops.length;i++){
+
+const text=letters[Math.floor(Math.random()*letters.length)]
+
+ctx.fillText(text,i*fontSize,drops[i]*fontSize)
+
+if(drops[i]*fontSize>canvas.height && Math.random()>0.975)
+drops[i]=0
+
+drops[i]++
+
+}
+
+}
+
+setInterval(draw,33)
+
+/* RANDOM */
+
+function random(len){
+
+const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+
+let s=""
+
+for(let i=0;i<len;i++){
+
+s+=chars[Math.floor(Math.random()*chars.length)]
+
+}
+
+return s
+
+}
+
+/* FREE KEY */
+
+function getKey(){
+
+let expire=Date.now()+86400000
+
+let key="FREE-"+random(8)+"-"+expire
+
+document.getElementById("key").innerText=
+"key = "+key
+
+let date=new Date(expire)
+
+document.getElementById("expire").innerText=
+"expire = "+date.toLocaleString()
+
+}
+
+</script>
+
+</body>
+</html>
