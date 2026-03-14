@@ -1,245 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FREE KEY SYSTEM</title>
+
+<title>CHECK KEY</title>
 
 <style>
 
 body{
-margin:0;
 background:black;
 color:#00ff9f;
 font-family:monospace;
-text-align:center;
-overflow:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
 }
 
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
-}
-
-.container{
-margin-top:120px;
-padding:20px;
-}
-
-.title{
-font-size:28px;
-margin-bottom:20px;
-}
-
-.keybox{
+.box{
 background:#000;
-border:2px solid #00ff9f;
-padding:20px;
+padding:40px;
 border-radius:15px;
-font-size:22px;
-width:90%;
-max-width:420px;
-margin:auto;
+border:2px solid #00ff9f;
 
 box-shadow:
 0 0 20px #00ff9f,
 0 0 60px #00ff9f;
 
+text-align:center;
+width:90%;
+max-width:420px;
+}
+
+.title{
+font-size:26px;
+margin-bottom:20px;
+}
+
+.result{
+margin-top:20px;
+font-size:18px;
 word-break:break-all;
 }
 
-button{
-margin-top:20px;
-padding:15px 40px;
-font-size:20px;
-background:#00ff9f;
-border:none;
-border-radius:10px;
-cursor:pointer;
-}
-
-button:hover{
-background:#00cc7a;
-}
-
-.copy{
-margin-top:15px;
-}
-
-.timer{
-margin-top:15px;
-color:#ffff00;
-}
-
 </style>
+
 </head>
 
 <body>
 
-<canvas id="matrix"></canvas>
+<div class="box">
 
-<div class="container">
+<div class="title">CHECK KEY</div>
 
-<div class="title">FREE KEY SYSTEM</div>
-
-<div class="keybox" id="keyBox">
-CLICK GET KEY
+<div class="result" id="result">
+CHECKING...
 </div>
-
-<button onclick="getKey()">GET KEY</button>
-
-<div class="copy" id="copyBox"></div>
-
-<div class="timer" id="timer"></div>
 
 </div>
 
 <script>
-
-/* link rút gọn */
-
-const shortLink="https://link4m.net/N4WJcnr"
 
 /* API worker */
 
-const api="https://YOUR-WORKER.workers.dev/key"
+const API="https://YOUR-WORKER.workers.dev/check"
 
-/* lấy key */
+/* lấy key từ URL */
 
-function getKey(){
+const params=new URLSearchParams(location.search)
 
-window.open(shortLink,"_blank")
+const key=params.get("key")
 
-document.getElementById("keyBox").innerText="WAITING..."
+if(!key){
 
-setTimeout(()=>{
+document.getElementById("result").innerText="❌ NO KEY"
 
-fetch(api)
+}else{
+
+checkKey(key)
+
+}
+
+function checkKey(key){
+
+fetch(API+"?key="+key)
+
 .then(r=>r.text())
-.then(key=>{
 
-localStorage.setItem("user_key",key)
+.then(data=>{
 
-document.getElementById("keyBox").innerText=key
+if(data==="VALID"){
 
-document.getElementById("copyBox").innerHTML=
-'<button onclick="copyKey()">COPY KEY</button>'
+document.getElementById("result").innerText=
+"✅ KEY VALID\n\n"+key
 
-startTimer(key)
+}else{
+
+document.getElementById("result").innerText=
+"⛔ INVALID KEY"
+
+}
 
 })
 
-},8000)
+.catch(()=>{
+
+document.getElementById("result").innerText=
+"⚠ API ERROR"
+
+})
 
 }
-
-/* copy key */
-
-function copyKey(){
-
-let key=document.getElementById("keyBox").innerText
-
-navigator.clipboard.writeText(key)
-
-document.getElementById("copyBox").innerHTML="COPIED ✔"
-
-}
-
-/* timer */
-
-function startTimer(key){
-
-let parts=key.split("-")
-
-let expire=parseInt(parts[parts.length-1])
-
-setInterval(()=>{
-
-let now=Date.now()
-
-let remain=expire-now
-
-if(remain<=0){
-
-document.getElementById("timer").innerText="KEY EXPIRED"
-
-return
-
-}
-
-let h=Math.floor(remain/3600000)
-let m=Math.floor((remain%3600000)/60000)
-let s=Math.floor((remain%60000)/1000)
-
-document.getElementById("timer").innerText=
-"RESET IN "+h+"h "+m+"m "+s+"s"
-
-},1000)
-
-}
-
-/* nếu đã có key */
-
-let saved=localStorage.getItem("user_key")
-
-if(saved){
-
-document.getElementById("keyBox").innerText=saved
-
-startTimer(saved)
-
-}
-
-</script>
-
-<script>
-
-/* MATRIX EFFECT */
-
-const canvas=document.getElementById("matrix")
-const ctx=canvas.getContext("2d")
-
-canvas.height=window.innerHeight
-canvas.width=window.innerWidth
-
-const letters="010101010101"
-const fontSize=14
-const columns=canvas.width/fontSize
-
-const drops=[]
-
-for(let i=0;i<columns;i++){
-drops[i]=1
-}
-
-function draw(){
-
-ctx.fillStyle="rgba(0,0,0,0.05)"
-ctx.fillRect(0,0,canvas.width,canvas.height)
-
-ctx.fillStyle="#0f0"
-ctx.font=fontSize+"px monospace"
-
-for(let i=0;i<drops.length;i++){
-
-let text=letters.charAt(Math.floor(Math.random()*letters.length))
-
-ctx.fillText(text,i*fontSize,drops[i]*fontSize)
-
-if(drops[i]*fontSize>canvas.height && Math.random()>0.975){
-drops[i]=0
-}
-
-drops[i]++
-
-}
-
-}
-
-setInterval(draw,35)
 
 </script>
 
