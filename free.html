@@ -6,12 +6,17 @@
 
 <style>
 
-body{
+*{
 margin:0;
-background:black;
-color:#0f0;
+padding:0;
+box-sizing:border-box;
 font-family:monospace;
+}
+
+body{
+background:black;
 overflow:hidden;
+color:#0f0;
 }
 
 /* matrix */
@@ -31,15 +36,30 @@ top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 
-background:#000;
-padding:40px;
+width:90%;
+max-width:420px;
 
-border:1px solid #0f0;
-border-radius:12px;
+padding:45px;
+
+background:rgba(0,0,0,0.9);
+
+border:2px solid #0f0;
+border-radius:18px;
 
 text-align:center;
 
-box-shadow:0 0 25px #0f0;
+box-shadow:
+0 0 20px #0f0,
+0 0 60px #0f0;
+
+}
+
+/* title */
+
+h2{
+
+font-size:28px;
+margin-bottom:25px;
 
 }
 
@@ -47,13 +67,33 @@ box-shadow:0 0 25px #0f0;
 
 button{
 
-padding:12px 25px;
+width:100%;
+
+padding:16px;
+
 margin-top:10px;
 
-background:#0f0;
+font-size:16px;
+
+background:#00ff00;
+
 border:none;
+
+border-radius:8px;
+
 font-weight:bold;
+
 cursor:pointer;
+
+transition:0.3s;
+
+}
+
+button:hover{
+
+box-shadow:0 0 20px #0f0;
+
+transform:scale(1.05);
 
 }
 
@@ -61,9 +101,25 @@ cursor:pointer;
 
 .key{
 
-margin-top:15px;
-color:#0ff;
+margin-top:25px;
+
 font-size:18px;
+
+color:#0ff;
+
+word-break:break-all;
+
+}
+
+/* expire */
+
+.exp{
+
+font-size:14px;
+
+margin-top:8px;
+
+color:#aaa;
 
 }
 
@@ -83,6 +139,10 @@ font-size:18px;
 
 <div class="key" id="keybox"></div>
 
+<div class="exp" id="expire"></div>
+
+<button onclick="copyKey()">COPY KEY</button>
+
 </div>
 
 <script>
@@ -96,7 +156,7 @@ c.height=window.innerHeight
 c.width=window.innerWidth
 
 const letters="01"
-const size=14
+const size=16
 const columns=c.width/size
 const drops=[]
 
@@ -127,7 +187,6 @@ drops[i]++
 
 setInterval(draw,33)
 
-
 /* device id */
 
 function getDevice(){
@@ -146,20 +205,17 @@ return id
 
 }
 
-
-/* bypass link */
+/* bypass */
 
 function bypass(){
 
-let done=localStorage.getItem("bypass_done")
+let done=localStorage.getItem("bypass")
 
 let today=new Date().toDateString()
 
 if(done!=today){
 
-localStorage.setItem("return_after_bypass",1)
-
-/* linkvertise */
+localStorage.setItem("return","1")
 
 window.location="https://linkvertise.com/your-link"
 
@@ -170,7 +226,6 @@ return
 generateKey()
 
 }
-
 
 /* generate key */
 
@@ -184,12 +239,16 @@ let raw=device+today
 
 let hash=await sha256(raw)
 
-let key="FREE-"+hash.substring(0,8).toUpperCase()+"-"+Date.now()+86400000
+let expire=Date.now()+86400000
+
+let key="FREE-"+hash.substring(0,8).toUpperCase()+"-"+expire
 
 document.getElementById("keybox").innerText="key = "+key
 
-}
+document.getElementById("expire").innerText=
+"expire = "+new Date(expire).toLocaleString()
 
+}
 
 /* sha256 */
 
@@ -205,14 +264,25 @@ return Array.from(new Uint8Array(hash))
 
 }
 
+/* copy */
 
-/* return from bypass */
+function copyKey(){
 
-if(localStorage.getItem("return_after_bypass")){
+let k=document.getElementById("keybox").innerText
 
-localStorage.removeItem("return_after_bypass")
+navigator.clipboard.writeText(k)
 
-localStorage.setItem("bypass_done",new Date().toDateString())
+alert("Copied!")
+
+}
+
+/* return bypass */
+
+if(localStorage.getItem("return")){
+
+localStorage.removeItem("return")
+
+localStorage.setItem("bypass",new Date().toDateString())
 
 generateKey()
 
