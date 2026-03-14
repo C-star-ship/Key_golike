@@ -4,48 +4,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>CHECK KEY</title>
+<title>FREE KEY SYSTEM</title>
 
 <style>
 
 body{
-background:black;
-color:#00ff00;
-font-family:monospace;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
 margin:0;
+background:black;
+color:#00ff9f;
+font-family:monospace;
+text-align:center;
+overflow:hidden;
 }
 
-.box{
-background:#000;
-padding:35px;
-border-radius:15px;
-border:2px solid #00ff00;
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
 
-box-shadow:
-0 0 20px #00ff00,
-0 0 60px #00ff00;
-
-text-align:center;
-width:90%;
-max-width:420px;
+.container{
+margin-top:120px;
+padding:20px;
 }
 
 .title{
-font-size:26px;
+font-size:28px;
 margin-bottom:20px;
 }
 
-.result{
-margin-top:20px;
-color:#00ffff;
-font-size:18px;
+.keybox{
+background:#000;
+border:2px solid #00ff9f;
+padding:20px;
+border-radius:15px;
+font-size:22px;
+width:90%;
+max-width:420px;
+margin:auto;
+
+box-shadow:
+0 0 20px #00ff9f,
+0 0 60px #00ff9f;
+
 word-break:break-all;
-line-height:1.6;
+}
+
+button{
+margin-top:20px;
+padding:15px 40px;
+font-size:20px;
+background:#00ff9f;
+border:none;
+border-radius:10px;
+cursor:pointer;
+}
+
+button:hover{
+background:#00cc7a;
+}
+
+.copy{
+margin-top:15px;
 }
 
 .timer{
@@ -58,11 +79,19 @@ color:#ffff00;
 
 <body>
 
-<div class="box">
+<canvas id="matrix"></canvas>
 
-<div class="title">CHECK KEY</div>
+<div class="container">
 
-<div class="result" id="result">Đang kiểm tra...</div>
+<div class="title">FREE KEY SYSTEM</div>
+
+<div class="keybox" id="keyBox">
+CLICK GET KEY
+</div>
+
+<button onclick="getKey()">GET KEY</button>
+
+<div class="copy" id="copyBox"></div>
 
 <div class="timer" id="timer"></div>
 
@@ -70,82 +99,147 @@ color:#ffff00;
 
 <script>
 
-/* lấy key từ URL */
+/* link rút gọn */
 
-const params = new URLSearchParams(window.location.search)
-const key = params.get("key")
+const shortLink="https://link4m.net/N4WJcnr"
 
-const result = document.getElementById("result")
-const timer = document.getElementById("timer")
+/* API worker */
 
-if(!key){
+const api="https://YOUR-WORKER.workers.dev/key"
 
-result.innerText="❌ Không có key trong URL"
-throw new Error("no key")
+/* lấy key */
+
+function getKey(){
+
+window.open(shortLink,"_blank")
+
+document.getElementById("keyBox").innerText="WAITING..."
+
+setTimeout(()=>{
+
+fetch(api)
+.then(r=>r.text())
+.then(key=>{
+
+localStorage.setItem("user_key",key)
+
+document.getElementById("keyBox").innerText=key
+
+document.getElementById("copyBox").innerHTML=
+'<button onclick="copyKey()">COPY KEY</button>'
+
+startTimer(key)
+
+})
+
+},8000)
 
 }
 
-/* kiểm tra format */
+/* copy key */
 
-const parts = key.split("-")
+function copyKey(){
 
-if(parts.length < 3){
+let key=document.getElementById("keyBox").innerText
 
-result.innerText="❌ Key không hợp lệ"
-throw new Error("bad key")
+navigator.clipboard.writeText(key)
 
-}
-
-const type = parts[0]
-const expire = parseInt(parts[parts.length-1])
-
-if(isNaN(expire)){
-
-result.innerText="❌ Key lỗi"
-throw new Error("expire error")
+document.getElementById("copyBox").innerHTML="COPIED ✔"
 
 }
 
-/* kiểm tra thời gian */
+/* timer */
 
-function update(){
+function startTimer(key){
 
-let now = Date.now()
+let parts=key.split("-")
 
-if(now > expire){
+let expire=parseInt(parts[parts.length-1])
 
-result.innerText =
-"⛔ KEY EXPIRED\n\n"+
-"key = "+key
+setInterval(()=>{
 
-timer.innerText=""
+let now=Date.now()
+
+let remain=expire-now
+
+if(remain<=0){
+
+document.getElementById("timer").innerText="KEY EXPIRED"
+
 return
 
 }
 
-let remain = expire - now
+let h=Math.floor(remain/3600000)
+let m=Math.floor((remain%3600000)/60000)
+let s=Math.floor((remain%60000)/1000)
 
-let hours = Math.floor(remain/3600000)
-let minutes = Math.floor((remain%3600000)/60000)
-let seconds = Math.floor((remain%60000)/1000)
+document.getElementById("timer").innerText=
+"RESET IN "+h+"h "+m+"m "+s+"s"
 
-let days = Math.floor(hours/24)
-
-result.innerText =
-"✅ VALID KEY\n\n"+
-"type = "+type+"\n"+
-"key = "+key+"\n"+
-"còn = "+hours+" giờ ("+days+" ngày)"
-
-timer.innerText =
-"RESET SAU: "+
-hours+"h "+minutes+"m "+seconds+"s"
+},1000)
 
 }
 
-update()
+/* nếu đã có key */
 
-setInterval(update,1000)
+let saved=localStorage.getItem("user_key")
+
+if(saved){
+
+document.getElementById("keyBox").innerText=saved
+
+startTimer(saved)
+
+}
+
+</script>
+
+<script>
+
+/* MATRIX EFFECT */
+
+const canvas=document.getElementById("matrix")
+const ctx=canvas.getContext("2d")
+
+canvas.height=window.innerHeight
+canvas.width=window.innerWidth
+
+const letters="010101010101"
+const fontSize=14
+const columns=canvas.width/fontSize
+
+const drops=[]
+
+for(let i=0;i<columns;i++){
+drops[i]=1
+}
+
+function draw(){
+
+ctx.fillStyle="rgba(0,0,0,0.05)"
+ctx.fillRect(0,0,canvas.width,canvas.height)
+
+ctx.fillStyle="#0f0"
+ctx.font=fontSize+"px monospace"
+
+for(let i=0;i<drops.length;i++){
+
+let text=letters.charAt(Math.floor(Math.random()*letters.length))
+
+ctx.fillText(text,i*fontSize,drops[i]*fontSize)
+
+if(drops[i]*fontSize>canvas.height && Math.random()>0.975){
+drops[i]=0
+}
+
+drops[i]++
+
+}
+
+}
+
+setInterval(draw,35)
 
 </script>
 
