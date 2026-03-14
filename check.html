@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Check Key</title>
+
+<style>
+body{
+background:black;
+color:#0f0;
+font-family:monospace;
+text-align:center;
+padding-top:120px;
+}
+
+input{
+padding:10px;
+width:260px;
+}
+
+button{
+padding:10px;
+margin-top:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>CHECK KEY</h2>
+
+<input id="key">
+
+<br>
+
+<button onclick="check()">CHECK</button>
+
+<p id="result"></p>
+
+<script>
+
+function check(){
+
+let key=document.getElementById("key").value
+
+if(key.length==16){
+
+document.getElementById("result").innerText="KEY CÓ VẺ HỢP LỆ"
+
+}else{
+
+document.getElementById("result").innerText="KEY KHÔNG ĐÚNG"
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
