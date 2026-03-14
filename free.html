@@ -1,24 +1,309 @@
-def check_key_online(key):
-    try:
+<!DOCTYPE html>
+<html>
+<head>
 
-        parts = key.split("-")
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-        if len(parts) < 3:
-            return False
+<title>FREE KEY</title>
 
-        key_type = parts[0]
+<style>
 
-        if key_type not in ["FREE","VIP"]:
-            return False
+body{
+margin:0;
+background:black;
+color:#00ff9f;
+font-family:monospace;
+overflow:hidden;
+}
 
-        expire = int(parts[-1])
+/* MATRIX BACKGROUND */
 
-        now = int(time.time()*1000)
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
 
-        if now > expire:
-            return False
+/* CENTER BOX */
 
-        return True
+.box{
 
-    except:
-        return False
+position:absolute;
+
+top:50%;
+left:50%;
+
+transform:translate(-50%,-50%);
+
+width:92%;
+max-width:420px;
+
+background:rgba(0,0,0,0.75);
+
+backdrop-filter:blur(8px);
+
+border:2px solid #00ff9f;
+
+border-radius:16px;
+
+padding:35px;
+
+box-shadow:
+0 0 20px #00ff9f,
+0 0 60px #00ff9f,
+0 0 120px #00ff9f;
+
+text-align:center;
+
+}
+
+/* TITLE */
+
+.title{
+
+font-size:26px;
+
+margin-bottom:15px;
+
+letter-spacing:2px;
+
+}
+
+/* BUTTON */
+
+button{
+
+width:95%;
+
+padding:15px;
+
+font-size:18px;
+
+background:black;
+
+color:#00ff9f;
+
+border:2px solid #00ff9f;
+
+border-radius:10px;
+
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+button:hover{
+
+background:#00ff9f;
+
+color:black;
+
+}
+
+/* KEY BOX */
+
+.keybox{
+
+margin-top:20px;
+
+padding:15px;
+
+border:2px dashed #00ff9f;
+
+border-radius:10px;
+
+font-size:18px;
+
+word-break:break-all;
+
+}
+
+/* COPY */
+
+.copy{
+
+margin-top:10px;
+
+color:#00ffff;
+
+cursor:pointer;
+
+}
+
+/* TIMER */
+
+.timer{
+
+margin-top:10px;
+
+color:#00ffff;
+
+font-size:15px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="box">
+
+<div class="title">FREE KEY</div>
+
+<button onclick="getKey()">GET KEY</button>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+/* MATRIX EFFECT */
+
+const canvas=document.getElementById("matrix")
+const ctx=canvas.getContext("2d")
+
+canvas.height=window.innerHeight
+canvas.width=window.innerWidth
+
+const letters="01"
+const fontSize=14
+const columns=canvas.width/fontSize
+
+const drops=[]
+
+for(let x=0;x<columns;x++)
+drops[x]=1
+
+function draw(){
+
+ctx.fillStyle="rgba(0,0,0,0.05)"
+ctx.fillRect(0,0,canvas.width,canvas.height)
+
+ctx.fillStyle="#0F0"
+ctx.font=fontSize+"px monospace"
+
+for(let i=0;i<drops.length;i++){
+
+const text=letters.charAt(Math.random()*letters.length)
+
+ctx.fillText(text,i*fontSize,drops[i]*fontSize)
+
+if(drops[i]*fontSize>canvas.height && Math.random()>0.975)
+drops[i]=0
+
+drops[i]++
+
+}
+
+}
+
+setInterval(draw,33)
+
+/* KEY SYSTEM */
+
+const LINK4M="https://link4m.net/N4WJcnr"
+
+function getKey(){
+
+if(location.hash!="#unlock"){
+
+location.href=LINK4M
+
+return
+
+}
+
+createKey()
+
+}
+
+function createKey(){
+
+let last=localStorage.getItem("free_time")
+
+let now=Date.now()
+
+if(last && now-last<86400000){
+
+let remain=86400000-(now-last)
+
+countdown(remain)
+
+return
+
+}
+
+let rand=Math.random().toString(36).substring(2,10).toUpperCase()
+
+let expire=Date.now()+86400000
+
+let key="FREE-"+rand+"-"+expire
+
+localStorage.setItem("free_time",now)
+
+showKey(key)
+
+}
+
+function showKey(key){
+
+document.getElementById("result").innerHTML=
+
+`
+<div class="keybox">${key}</div>
+
+<div class="copy" onclick="copyKey('${key}')">COPY KEY</div>
+
+<div class="timer">VALID 24 HOURS</div>
+`
+
+}
+
+function copyKey(k){
+
+navigator.clipboard.writeText(k)
+
+alert("Copied!")
+
+}
+
+/* TIMER */
+
+function countdown(ms){
+
+let s=Math.floor(ms/1000)
+
+let h=Math.floor(s/3600)
+
+let m=Math.floor((s%3600)/60)
+
+let sec=s%60
+
+document.getElementById("result").innerHTML=
+
+`⛔ KEY ALREADY CLAIMED<br><br>
+TRY AGAIN IN<br>
+${h}h ${m}m ${sec}s`
+
+}
+
+/* AUTO UNLOCK */
+
+if(location.hash=="#unlock"){
+
+createKey()
+
+}
+
+</script>
+
+</body>
+</html>
