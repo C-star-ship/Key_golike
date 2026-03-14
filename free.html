@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>FREE KEY</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -16,16 +15,12 @@ overflow:hidden;
 color:#0f0;
 }
 
-/* MATRIX CANVAS */
-
 canvas{
 position:fixed;
 top:0;
 left:0;
 z-index:0;
 }
-
-/* CENTER BOX */
 
 .container{
 
@@ -52,22 +47,15 @@ border-radius:15px;
 border:2px solid #00ff00;
 
 box-shadow:
-
-0 0 30px #00ff00,
+0 0 25px #00ff00,
 0 0 80px #00ff00;
 
 }
 
-/* TITLE */
-
 .title{
-
 font-size:28px;
 margin-bottom:20px;
-
 }
-
-/* BUTTON */
 
 button{
 
@@ -90,8 +78,6 @@ font-weight:bold;
 
 }
 
-/* KEY TEXT */
-
 .key{
 
 margin-top:15px;
@@ -100,13 +86,9 @@ word-break:break-all;
 
 }
 
-/* TIMER */
-
 .timer{
-
 margin-top:10px;
 color:#fff;
-
 }
 
 </style>
@@ -132,24 +114,21 @@ color:#fff;
 
 <script>
 
-/* MATRIX EFFECT */
+/* MATRIX */
 
 const canvas=document.getElementById("matrix")
 const ctx=canvas.getContext("2d")
 
-canvas.height=window.innerHeight
 canvas.width=window.innerWidth
+canvas.height=window.innerHeight
 
 const letters="01"
-
 const fontSize=14
-
 const columns=canvas.width/fontSize
 
 const drops=[]
 
-for(let x=0;x<columns;x++)
-drops[x]=1
+for(let i=0;i<columns;i++) drops[i]=1
 
 function draw(){
 
@@ -161,7 +140,7 @@ ctx.font=fontSize+"px monospace"
 
 for(let i=0;i<drops.length;i++){
 
-const text=letters[Math.floor(Math.random()*letters.length)]
+let text=letters[Math.floor(Math.random()*letters.length)]
 
 ctx.fillText(text,i*fontSize,drops[i]*fontSize)
 
@@ -200,9 +179,7 @@ let saved=localStorage.getItem("free_key")
 if(saved){
 
 document.getElementById("key").innerText="key = "+saved
-
 startTimer()
-
 return
 
 }
@@ -231,13 +208,12 @@ let expire=parseInt(key.split("-")[2])
 
 function update(){
 
-let now=Date.now()
-
-let diff=expire-now
+let diff=expire-Date.now()
 
 if(diff<=0){
 
 localStorage.removeItem("free_key")
+localStorage.removeItem("bypass")
 
 document.getElementById("timer").innerText="Key reset!"
 
@@ -264,7 +240,10 @@ function copyKey(){
 
 let key=localStorage.getItem("free_key")
 
-if(!key) return
+if(!key){
+alert("No key")
+return
+}
 
 navigator.clipboard.writeText(key)
 
@@ -284,9 +263,9 @@ let back=localStorage.getItem("return")
 
 if(back==="1"){
 
-localStorage.setItem("bypass",today)
-
 localStorage.removeItem("return")
+
+localStorage.setItem("bypass",today)
 
 generateKey()
 
@@ -304,15 +283,7 @@ return
 
 localStorage.setItem("return","1")
 
-window.location="https://link4m.net/N4WJcnr"
-
-}
-
-/* LOAD */
-
-window.onload=function(){
-
-generateKey()
+window.location.href="https://link4m.net/N4WJcnr"
 
 }
 
