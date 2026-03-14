@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>VIP KEY GENERATOR</title>
+<title>VIP KEY</title>
 
 <style>
 
@@ -25,7 +25,7 @@ padding:40px;
 border:2px solid #0f0;
 border-radius:15px;
 
-box-shadow:0 0 25px #0f0;
+box-shadow:0 0 30px #0f0;
 
 text-align:center;
 
@@ -34,45 +34,11 @@ max-width:420px;
 
 }
 
-h2{
-margin-bottom:25px;
-}
-
-input{
-
-width:100%;
-padding:12px;
-
-background:#111;
-border:1px solid #0f0;
-
-color:#0f0;
-
-margin-bottom:15px;
-
-}
-
-button{
-
-width:100%;
-padding:14px;
-
-background:#0f0;
-border:none;
-
-font-weight:bold;
-cursor:pointer;
-
-margin-top:10px;
-
-}
-
 .result{
 
 margin-top:20px;
-font-size:16px;
-
 color:#0ff;
+font-size:18px;
 
 word-break:break-all;
 
@@ -86,11 +52,7 @@ word-break:break-all;
 
 <div class="box">
 
-<h2>VIP KEY GENERATOR</h2>
-
-<input id="days" placeholder="Nhập số ngày (ví dụ 7)">
-
-<button onclick="createKey()">CREATE KEY</button>
+<h2>VIP KEY</h2>
 
 <div class="result" id="result"></div>
 
@@ -98,42 +60,18 @@ word-break:break-all;
 
 <script>
 
-function random(n){
+let path = window.location.pathname
 
-const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+let parts = path.split("/")
 
-let s=""
+let dayPart = parts.find(p=>p.startsWith("day="))
+let keyPart = parts.find(p=>p.startsWith("key="))
 
-for(let i=0;i<n;i++){
+let day = dayPart ? dayPart.split("=")[1] : "?"
+let key = keyPart ? keyPart.split("=")[1] : "?"
 
-s+=chars[Math.floor(Math.random()*chars.length)]
-
-}
-
-return s
-
-}
-
-function createKey(){
-
-let days=parseInt(document.getElementById("days").value)
-
-if(!days){
-
-alert("Nhập số ngày")
-
-return
-
-}
-
-let expire=Date.now()+days*86400000
-
-let key="VIP-"+random(10)+"-"+expire
-
-document.getElementById("result").innerText=
-"day = "+days+"\n\nkey = "+key
-
-}
+document.getElementById("result").innerText =
+"day = "+day+"\n\nkey = "+key
 
 </script>
 
