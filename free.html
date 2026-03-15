@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>FREE KEY</title>
+<title>Free Key</title>
 
 <style>
 
@@ -17,26 +17,18 @@ font-family:monospace;
 overflow:hidden;
 }
 
-/* MATRIX */
-
 canvas{
 position:fixed;
 top:0;
 left:0;
-width:100%;
-height:100%;
 z-index:-1;
 }
-
-/* MAIN BOX */
 
 .box{
 
 position:absolute;
-
 top:50%;
 left:50%;
-
 transform:translate(-50%,-50%);
 
 width:92%;
@@ -49,56 +41,18 @@ text-align:center;
 background:rgba(0,0,0,0.85);
 
 border:2px solid #00ff9f;
-
 border-radius:15px;
 
 box-shadow:
 0 0 20px #00ff9f,
-0 0 60px #00ff9f,
-0 0 120px #00ff9f;
+0 0 60px #00ff9f;
 
 }
-
-/* TITLE */
 
 .title{
-font-size:28px;
-letter-spacing:3px;
-margin-bottom:25px;
+font-size:26px;
+margin-bottom:20px;
 }
-
-/* BUTTON */
-
-button{
-
-width:100%;
-
-padding:16px;
-
-font-size:18px;
-
-border-radius:10px;
-
-border:2px solid #00ff9f;
-
-background:black;
-
-color:#00ff9f;
-
-cursor:pointer;
-
-transition:0.3s;
-
-}
-
-button:hover{
-
-background:#00ff9f;
-color:black;
-
-}
-
-/* KEY BOX */
 
 .keybox{
 
@@ -114,38 +68,13 @@ font-size:20px;
 
 word-break:break-all;
 
-animation:glow 1.5s infinite alternate;
-
 }
-
-@keyframes glow{
-
-from{box-shadow:0 0 10px #00ff9f}
-to{box-shadow:0 0 30px #00ff9f}
-
-}
-
-/* COPY */
 
 .copy{
 
 margin-top:10px;
 
 cursor:pointer;
-
-color:#00ffff;
-
-font-size:16px;
-
-}
-
-/* TIMER */
-
-.timer{
-
-margin-top:15px;
-
-font-size:15px;
 
 color:#00ffff;
 
@@ -163,15 +92,13 @@ color:#00ffff;
 
 <div class="title">FREE KEY</div>
 
-<button onclick="getKey()">GET KEY</button>
-
-<div id="result"></div>
+<div id="result">Checking access...</div>
 
 </div>
 
 <script>
 
-/* MATRIX BACKGROUND */
+/* MATRIX */
 
 const canvas=document.getElementById("matrix")
 const ctx=canvas.getContext("2d")
@@ -180,7 +107,9 @@ canvas.width=window.innerWidth
 canvas.height=window.innerHeight
 
 const letters="01"
+
 const fontSize=14
+
 const columns=canvas.width/fontSize
 
 const drops=[]
@@ -212,24 +141,23 @@ drops[i]++
 
 setInterval(draw,33)
 
+/* VERIFY TOKEN */
+
+const params=new URLSearchParams(location.search)
+
+const token=params.get("token")
+
+const saved=localStorage.getItem("unlock_token")
+
+if(!token || token!==saved){
+
+document.getElementById("result").innerText="ACCESS DENIED"
+
+throw "no access"
+
+}
+
 /* KEY SYSTEM */
-
-const LINK4M="https://link4m.net/N4WJcnr"
-
-function getKey(){
-
-if(location.hash!="#unlock"){
-
-location.href=LINK4M
-return
-
-}
-
-createKey()
-
-}
-
-function createKey(){
 
 let last=localStorage.getItem("free_time")
 
@@ -237,10 +165,15 @@ let now=Date.now()
 
 if(last && now-last<86400000){
 
-countdown(86400000-(now-last))
-return
+let remain=86400000-(now-last)
 
-}
+let h=Math.floor(remain/3600000)
+
+document.getElementById("result").innerText=
+
+"KEY ALREADY CLAIMED\nTRY AGAIN IN "+h+" HOURS"
+
+}else{
 
 let rand=Math.random().toString(36).substring(2,10).toUpperCase()
 
@@ -250,75 +183,23 @@ let key="FREE-"+rand+"-"+expire
 
 localStorage.setItem("free_time",now)
 
-showKey(key)
-
-}
-
-function showKey(key){
-
 document.getElementById("result").innerHTML=
 
 `
 <div class="keybox">${key}</div>
 
-<div class="copy" onclick="copyKey('${key}')">
-CLICK TO COPY
-</div>
-
-<div class="timer">
-VALID 24 HOURS
+<div class="copy" onclick="copy('${key}')">
+COPY KEY
 </div>
 `
 
 }
 
-/* COPY */
+function copy(k){
 
-function copyKey(key){
+navigator.clipboard.writeText(k)
 
-navigator.clipboard.writeText(key)
-
-const el=document.querySelector(".copy")
-
-el.innerText="COPIED ✓"
-
-setTimeout(()=>{
-
-el.innerText="CLICK TO COPY"
-
-},2000)
-
-}
-
-/* COUNTDOWN */
-
-function countdown(ms){
-
-setInterval(()=>{
-
-let s=Math.floor(ms/1000)
-
-let h=Math.floor(s/3600)
-
-let m=Math.floor((s%3600)/60)
-
-let sec=s%60
-
-document.getElementById("result").innerHTML=
-
-`
-⛔ KEY ALREADY CLAIMED
-
-TRY AGAIN IN
-
-${h}h ${m}m ${sec}s
-`
-
-ms-=1000
-
-if(ms<=0) location.reload()
-
-},1000)
+alert("Key copied")
 
 }
 
