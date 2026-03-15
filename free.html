@@ -26,7 +26,7 @@ left:0;
 z-index:-1;
 }
 
-/* CENTER BOX */
+/* MAIN BOX */
 
 .box{
 
@@ -51,8 +51,8 @@ border-radius:16px;
 padding:35px;
 
 box-shadow:
-0 0 20px #00ff9f,
-0 0 60px #00ff9f,
+0 0 25px #00ff9f,
+0 0 70px #00ff9f,
 0 0 120px #00ff9f;
 
 text-align:center;
@@ -62,13 +62,9 @@ text-align:center;
 /* TITLE */
 
 .title{
-
 font-size:26px;
-
-margin-bottom:15px;
-
+margin-bottom:20px;
 letter-spacing:2px;
-
 }
 
 /* BUTTON */
@@ -76,17 +72,13 @@ letter-spacing:2px;
 button{
 
 width:95%;
-
-padding:15px;
-
+padding:16px;
 font-size:18px;
 
 background:black;
-
 color:#00ff9f;
 
 border:2px solid #00ff9f;
-
 border-radius:10px;
 
 cursor:pointer;
@@ -98,7 +90,6 @@ transition:0.3s;
 button:hover{
 
 background:#00ff9f;
-
 color:black;
 
 }
@@ -109,15 +100,25 @@ color:black;
 
 margin-top:20px;
 
-padding:15px;
+padding:18px;
 
 border:2px dashed #00ff9f;
 
-border-radius:10px;
+border-radius:12px;
 
-font-size:18px;
+font-size:20px;
 
 word-break:break-all;
+
+animation:glow 1.5s infinite alternate;
+
+}
+
+@keyframes glow{
+
+from{box-shadow:0 0 10px #00ff9f}
+
+to{box-shadow:0 0 30px #00ff9f}
 
 }
 
@@ -126,10 +127,9 @@ word-break:break-all;
 .copy{
 
 margin-top:10px;
-
-color:#00ffff;
-
 cursor:pointer;
+color:#00ffff;
+font-size:16px;
 
 }
 
@@ -137,11 +137,9 @@ cursor:pointer;
 
 .timer{
 
-margin-top:10px;
-
-color:#00ffff;
-
+margin-top:15px;
 font-size:15px;
+color:#00ffff;
 
 }
 
@@ -165,7 +163,7 @@ font-size:15px;
 
 <script>
 
-/* MATRIX EFFECT */
+/* MATRIX ANIMATION */
 
 const canvas=document.getElementById("matrix")
 const ctx=canvas.getContext("2d")
@@ -179,8 +177,7 @@ const columns=canvas.width/fontSize
 
 const drops=[]
 
-for(let x=0;x<columns;x++)
-drops[x]=1
+for(let x=0;x<columns;x++) drops[x]=1
 
 function draw(){
 
@@ -233,9 +230,7 @@ let now=Date.now()
 
 if(last && now-last<86400000){
 
-let remain=86400000-(now-last)
-
-countdown(remain)
+countdown(86400000-(now-last))
 
 return
 
@@ -260,24 +255,36 @@ document.getElementById("result").innerHTML=
 `
 <div class="keybox">${key}</div>
 
-<div class="copy" onclick="copyKey('${key}')">COPY KEY</div>
+<div class="copy" onclick="copyKey('${key}')">
+CLICK TO COPY
+</div>
 
 <div class="timer">VALID 24 HOURS</div>
 `
 
 }
 
+/* COPY */
+
 function copyKey(k){
 
 navigator.clipboard.writeText(k)
 
-alert("Copied!")
+const el=document.querySelector(".copy")
+
+el.innerText="COPIED ✓"
+
+setTimeout(()=>{
+el.innerText="CLICK TO COPY"
+},2000)
 
 }
 
-/* TIMER */
+/* COUNTDOWN */
 
 function countdown(ms){
+
+let timer=setInterval(()=>{
 
 let s=Math.floor(ms/1000)
 
@@ -293,14 +300,18 @@ document.getElementById("result").innerHTML=
 TRY AGAIN IN<br>
 ${h}h ${m}m ${sec}s`
 
+ms-=1000
+
+if(ms<=0) location.reload()
+
+},1000)
+
 }
 
 /* AUTO UNLOCK */
 
 if(location.hash=="#unlock"){
-
 createKey()
-
 }
 
 </script>
