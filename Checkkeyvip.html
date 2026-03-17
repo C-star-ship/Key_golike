@@ -57,6 +57,19 @@
     <script>
         // ⚠️ THAY LINK API CỦA BẠN VÀO ĐÂY
         const API = "https://script.google.com/macros/s/AKfycbxvSkK0slmP5VcE62d1R5lgB9npW6Y7WlGls0lvqmQINMlp4yLLTrUaSxhkfj2XLcYg8w/exec";
+                // Tự động bắt Key từ URL (Ví dụ: check.html?key=XW-1234)
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const keyFromUrl = urlParams.get('key');
+            
+            if (keyFromUrl) {
+                // Tự động điền vào ô input
+                document.getElementById("keyInput").value = keyFromUrl;
+                // Tự động bấm nút tra cứu luôn
+                checkKey();
+            }
+        };
+
 
         async function checkKey() {
             let key = document.getElementById("keyInput").value.trim();
