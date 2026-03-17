@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra Cứu Key VIP | XWorld</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        body { margin: 0; font-family: 'Inter', sans-serif; background: #0b0f19; color: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        * { box-sizing: border-box; }
+
+        .card { background: linear-gradient(145deg, #121826, #0f131f); border-radius: 16px; padding: 40px 30px; border: 1px solid rgba(0,255,200,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: 100%; max-width: 450px; text-align: center; }
+        .logo { font-size: 28px; font-weight: 800; color: #00ffc3; margin-bottom: 5px; text-shadow: 0 0 10px rgba(0,255,195,0.3); letter-spacing: 2px; }
+        .sub { color: #94a3b8; font-size: 14px; margin-bottom: 30px; }
+
+        input { width: 100%; padding: 15px; margin-bottom: 20px; background: #0b0f19; border: 1px solid #334155; color: #00ffc3; border-radius: 8px; font-size: 16px; font-family: monospace; text-align: center; font-weight: bold; transition: 0.3s; }
+        input:focus { border-color: #00ffc3; outline: none; box-shadow: 0 0 15px rgba(0,255,195,0.2); }
+        input::placeholder { color: #475569; font-weight: normal; }
+
+        .btn { background: #00ffc3; color: #000; border: none; padding: 15px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; text-transform: uppercase; }
+        .btn:hover:not(:disabled) { box-shadow: 0 0 20px rgba(0,255,195,0.4); transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.6; cursor: wait; transform: none; box-shadow: none; }
+
+        /* KHU VỰC HIỂN THỊ KẾT QUẢ */
+        #resultBox { margin-top: 30px; padding: 20px; border-radius: 12px; display: none; text-align: left; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .res-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 8px; }
+        .res-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .res-label { color: #94a3b8; }
+        .res-val { font-weight: bold; color: white; }
+        
+        .status-valid { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-valid .res-status { color: #10b981; }
+        
+        .status-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); text-align: center; color: #ef4444; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="logo">XWORLD</div>
+        <div class="sub">HỆ THỐNG TRA CỨU KEY VIP</div>
+
+        <input id="keyInput" type="text" placeholder="Nhập mã Key (VD: XW-ABCD-...)" autocomplete="off">
+        <button class="btn" id="btnCheck" onclick="checkKey()">🔍 Kiểm Tra Ngay</button>
+
+        <div id="resultBox"></div>
+        
+        <div style="margin-top: 25px;">
+            <a href="index.html" style="color: #94a3b8; text-decoration: none; font-size: 14px; border-bottom: 1px dashed #94a3b8;">← Quay lại Cửa hàng</a>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ THAY LINK API CỦA BẠN VÀO ĐÂY
+        const API = "https://script.google.com/macros/s/AKfycbxvSkK0slmP5VcE62d1R5lgB9npW6Y7WlGls0lvqmQINMlp4yLLTrUaSxhkfj2XLcYg8w/exec";
+
+        async function checkKey() {
+            let key = document.getElementById("keyInput").value.trim();
+            if (!key) return alert("⚠️ Vui lòng nhập mã Key để kiểm tra!");
+
+            let btn = document.getElementById("btnCheck");
+            let resultBox = document.getElementById("resultBox");
+
+            btn.disabled = true;
+            btn.innerText = "⏳ Đang tra cứu...";
+            resultBox.style.display = "none";
+            resultBox.className = ""; // Reset class
+
+            try {
+                // Gọi API lên máy chủ y hệt như Tool Python
+                let res = await fetch(`${API}?action=checkkey&key=${key}`);
+                let data = await res.json();
+                
+                let html = "";
+
+                if (data.status === "valid") {
+                    resultBox.classList.add("status-valid");
+                    html = `
+                        <div class="res-row"><span class="res-label">Trạng thái:</span><span class="res-val res-status">✅ Đang hoạt động</span></div>
+                        <div class="res-row"><span class="res-label">Chủ sở hữu:</span><span class="res-val">${data.user}</span></div>
+                        <div class="res-row"><span class="res-label">Ngày hết hạn:</span><span class="res-val">${new Date(data.expire).toLocaleDateString('vi-VN')}</span></div>
+                        <div class="res-row"><span class="res-label">Giờ hết hạn:</span><span class="res-val">${new Date(data.expire).toLocaleTimeString('vi-VN')}</span></div>
+                    `;
+                } 
+                else if (data.status === "expired") {
+                    resultBox.classList.add("status-error");
+                    html = `❌ Mã Key này đã HẾT HẠN sử dụng!`;
+                } 
+                else if (data.status === "banned") {
+                    resultBox.classList.add("status-error");
+                    html = `⛔ Mã Key này đã bị Admin KHÓA!`;
+                } 
+                else if (data.status === "hwid_mismatch") {
+                    resultBox.classList.add("status-error");
+                    html = `⚠️ Key đang bị khóa với một máy tính khác!`;
+                }
+                else {
+                    resultBox.classList.add("status-error");
+                    html = `❌ Không tìm thấy Key hoặc nhập sai mã!`;
+                }
+
+                resultBox.innerHTML = html;
+                resultBox.style.display = "block";
+
+            } catch (error) {
+                alert("❌ Lỗi mạng: Không thể kết nối đến máy chủ!");
+            }
+
+            btn.disabled = false;
+            btn.innerText = "🔍 Kiểm Tra Lại";
+        }
+    </script>
+</body>
+</html>
